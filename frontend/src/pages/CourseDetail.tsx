@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { getCourseById } from '../utils/api';
 import { useActiveAccount } from 'thirdweb/react';
 import { isLessonCompleted } from '../utils/progress';
+import { getMockCourseById } from '../data/mockCourses';
 import ProgressBar from '../components/ProgressBar';
 import type { Course } from '../types';
 
@@ -28,7 +29,12 @@ export default function CourseDetail() {
       const data = await getCourseById(courseId);
       setCourse(data);
     } catch (err) {
-      console.error(err);
+      // On API error, fallback to mock data for MVP/demo
+      console.warn('API unavailable, using mock data:', err);
+      const mockCourse = getMockCourseById(courseId);
+      if (mockCourse) {
+        setCourse(mockCourse);
+      }
     } finally {
       setLoading(false);
     }
